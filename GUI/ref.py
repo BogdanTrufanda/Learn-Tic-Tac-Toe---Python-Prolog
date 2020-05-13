@@ -1,11 +1,15 @@
+from threading import Thread
 from tkinter import *
+import tkinter as tk
+import tkinter.scrolledtext as tkst
 import tkinter.messagebox
 import random
+from time import sleep
 
 tk = Tk()
 tk.title("Tic Tac Toe Game PBR")
 tk.iconbitmap("index.ico")
-tk.geometry("414x500+450+152")
+tk.geometry("814x500+450+152")
 tk.resizable(0, 0)
 pa = StringVar()
 playerb = StringVar()
@@ -20,19 +24,26 @@ moves_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
 
 
 def learn():
-    global moves_list, win
-    reset()
-    with open("games.csv", "r") as fd:
-        for x in fd.readlines():
-            win = False
-            x = x.strip("\n")
-            move = x.split(",")
-            print(move)
-            for y in range(len(move)):
-                mov = move[y][0]
-                play = move[y][1].upper()
-                if not win:
-                    btnClick(button_list[moves_list.index(mov)], play)
+    def local_learn():
+        global moves_list, win, editArea
+        with open("../Prolog/tictactoe.csv", "r") as fd:
+            for x in fd.readlines():
+                reset()
+                win = False
+                x = x.strip("\n")
+                move = x.split(", ")
+                editArea.insert('1.0', 'my status here.\n')
+                for y in range(len(move)):
+                    mov = move[y][0]
+                    play = move[y][1].upper()
+                    if not win:
+                        btnClick(button_list[moves_list.index(mov)], play)
+                sleep(0.01)
+
+    c = Thread(target=local_learn)
+    # c.setDaemon(True)
+    c.start()
+    # c.join()
 
 
 def generate():
@@ -87,11 +98,11 @@ def checkForWin():
             button1['text'] == 'X' and button4['text'] == 'X' and button7['text'] == 'X' or
             button2['text'] == 'X' and button5['text'] == 'X' and button8['text'] == 'X' or
             button7['text'] == 'X' and button6['text'] == 'X' and button9['text'] == 'X'):
-        tkinter.messagebox.showinfo("Tic-Tac-Toe", "X Won!")
+        # tkinter.messagebox.showinfo("Tic-Tac-Toe", "X Won!")
         reset()
 
     elif flag == 8:
-        tkinter.messagebox.showinfo("Tic-Tac-Toe", "It is a Tie")
+        # tkinter.messagebox.showinfo("Tic-Tac-Toe", "It is a Tie")
         reset()
 
     elif (button1['text'] == '0' and button2['text'] == '0' and button3['text'] == '0' or
@@ -103,7 +114,7 @@ def checkForWin():
           button1['text'] == '0' and button4['text'] == '0' and button7['text'] == '0' or
           button2['text'] == '0' and button5['text'] == '0' and button8['text'] == '0' or
           button7['text'] == '0' and button6['text'] == '0' and button9['text'] == '0'):
-        tkinter.messagebox.showinfo("Tic-Tac-Toe", "0 Won!")
+        # tkinter.messagebox.showinfo("Tic-Tac-Toe", "0 Won!")
         reset()
 
 
@@ -152,6 +163,9 @@ buttonlearn = Button(tk, text="Learn", font='Times 12 bold', bg='red4', fg='whit
 
 buttongenerate = Button(tk, text="Generate", font='Times 12 bold', bg='red4', fg='white', height=2, width=10,
                         command=generate).place(x=230, y=445)
+
+editArea = tkst.ScrolledText(wrap=WORD, width=40, height=10).place(x=450, y=280)
+# editArea.pack(padx=10, pady=10, fill=BOTH, expand=True)
 
 tk.mainloop()
 
