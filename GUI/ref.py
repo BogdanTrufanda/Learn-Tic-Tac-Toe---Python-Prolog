@@ -5,11 +5,14 @@ import tkinter.scrolledtext as tkst
 import tkinter.messagebox
 import random
 from time import sleep
+from tkinter import ttk
+import json
 
+game, game1 = 1, 1
 tk = Tk()
 tk.title("Tic Tac Toe Game PBR")
 tk.iconbitmap("index.ico")
-tk.geometry("814x500+450+152")
+tk.geometry("1014x500+450+152")
 tk.resizable(0, 0)
 pa = StringVar()
 playerb = StringVar()
@@ -23,21 +26,27 @@ win = False
 moves_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
 
 
+# TODO debug la meciuri ( cand apare in dreapta si cand nu) + prolog
+
 def learn():
     def local_learn():
-        global moves_list, win, editArea
-        with open("../Prolog/tictactoe.csv", "r") as fd:
+        global moves_list, win, editArea, game1
+        with open("games.csv", "r") as fd:
             for x in fd.readlines():
                 reset()
                 win = False
                 x = x.strip("\n")
                 move = x.split(", ")
-                editArea.insert('1.0', 'my status here.\n')
+                txtOutput.insert(END, str(game1) + "." + " ")
                 for y in range(len(move)):
                     mov = move[y][0]
                     play = move[y][1].upper()
+                    txtOutput.insert(END, str(mov) + str(play) + " ")
                     if not win:
                         btnClick(button_list[moves_list.index(mov)], play)
+                txtOutput.insert(END, "\n")
+                txtOutput.see(END)
+                game1 += 1
                 sleep(0.01)
 
     c = Thread(target=local_learn)
@@ -89,6 +98,7 @@ def reset():
 
 
 def checkForWin():
+    global game
     if (button1['text'] == 'X' and button2['text'] == 'X' and button3['text'] == 'X' or
             button4['text'] == 'X' and button5['text'] == 'X' and button6['text'] == 'X' or
             button7['text'] == 'X' and button8['text'] == 'X' and button9['text'] == 'X' or
@@ -99,10 +109,16 @@ def checkForWin():
             button2['text'] == 'X' and button5['text'] == 'X' and button8['text'] == 'X' or
             button7['text'] == 'X' and button6['text'] == 'X' and button9['text'] == 'X'):
         # tkinter.messagebox.showinfo("Tic-Tac-Toe", "X Won!")
+        txtOutput1.insert(END, str(game) + "." + " " + "X Won!" + "\n")
+        txtOutput1.see(END)
+        game += 1
         reset()
 
     elif flag == 8:
         # tkinter.messagebox.showinfo("Tic-Tac-Toe", "It is a Tie")
+        txtOutput1.insert(END, str(game) + "." + " " + "Tie!\n")
+        txtOutput1.see(END)
+        game += 1
         reset()
 
     elif (button1['text'] == '0' and button2['text'] == '0' and button3['text'] == '0' or
@@ -115,6 +131,9 @@ def checkForWin():
           button2['text'] == '0' and button5['text'] == '0' and button8['text'] == '0' or
           button7['text'] == '0' and button6['text'] == '0' and button9['text'] == '0'):
         # tkinter.messagebox.showinfo("Tic-Tac-Toe", "0 Won!")
+        txtOutput1.insert(END, str(game) + "." + " " + "0 Won!" + "\n")
+        txtOutput1.see(END)
+        game += 1
         reset()
 
 
@@ -164,8 +183,43 @@ buttonlearn = Button(tk, text="Learn", font='Times 12 bold', bg='red4', fg='whit
 buttongenerate = Button(tk, text="Generate", font='Times 12 bold', bg='red4', fg='white', height=2, width=10,
                         command=generate).place(x=230, y=445)
 
-editArea = tkst.ScrolledText(wrap=WORD, width=40, height=10).place(x=450, y=280)
-# editArea.pack(padx=10, pady=10, fill=BOTH, expand=True)
+w0 = Label(tk, text="Games", font='Times 15 bold', justify=RIGHT)
+w0.place(x=450, y=30)
+
+w = Label(tk, text="Wins", font='Times 15 bold')
+w.place(x=450, y=250)
+
+txtFrame = Frame(tk, borderwidth=1, relief="sunken")
+txtOutput = Text(txtFrame, wrap=NONE, height=10, width=58, borderwidth=0)
+vscroll = Scrollbar(txtFrame, orient=VERTICAL, command=txtOutput.yview)
+txtOutput['yscroll'] = vscroll.set
+
+vscroll.pack(side="right", fill="y")
+txtOutput.pack(side="left", fill="both", expand=True)
+
+txtFrame.place(x=450, y=60)
+
+
+# T = Text(tk, height=10, width=40)
+# T.place(x=450, y=280)
+#
+# T.insert(END,
+#          "")
+
+
+txtFrame1 = Frame(tk, borderwidth=1, relief="sunken")
+txtOutput1 = Text(txtFrame1, wrap=NONE, height=10, width=40, borderwidth=0)
+vscroll1 = Scrollbar(txtFrame1, orient=VERTICAL, command=txtOutput1.yview)
+txtOutput1['yscroll'] = vscroll1.set
+
+vscroll1.pack(side="right", fill="y")
+txtOutput1.pack(side="left", fill="both", expand=True)
+
+txtFrame1.place(x=450, y=280)
+
+
+
+
 
 tk.mainloop()
 
