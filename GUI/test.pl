@@ -1,0 +1,1 @@
+sal(LISTA,B) :- B is 0, writeln(LISTA).

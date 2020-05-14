@@ -4,6 +4,16 @@ import tkinter.messagebox
 import random
 from time import sleep
 
+# from pyswip import Prolog, Functor, Variable, Query
+#
+# prolog = Prolog()
+# prolog.consult("test.pl")
+#
+# print(list(prolog.query("sal([1,2,3,4],B)")))
+#
+# for x in range(10):
+#     print(x)
+
 debug = True
 game, game1 = 1, 1
 tk = Tk()
@@ -11,10 +21,6 @@ tk.title("Tic Tac Toe Game PBR")
 tk.iconbitmap("index.ico")
 tk.geometry("1014x500+450+152")
 tk.resizable(0, 0)
-pa = StringVar()
-playerb = StringVar()
-p1 = StringVar()
-p2 = StringVar()
 
 bclick = True
 flag = 0
@@ -62,14 +68,12 @@ def generate():
 
 
 def btnClick(buttons, player=None):
-    global bclick, flag, player2_name, player1_name, playerb, pa
+    global bclick, flag, player2_name, player1_name
     if buttons["text"] == " " and bclick:
         if player is None:
             player = "X"
         buttons["text"] = player
         bclick = False
-        playerb = p2.get() + " Wins!"
-        pa = p1.get() + " Wins!"
         checkForWin()
         flag += 1
 
@@ -85,16 +89,19 @@ def btnClick(buttons, player=None):
 
 
 def reset():
-    global flag, win
+    global flag, win, bclick
     button1["text"] = button2["text"] = button3["text"] = button4["text"] = button5["text"] = button6["text"] = \
         button7["text"] = button8["text"] = button9["text"] = " "
     flag = 0
     win = True
+    bclick = True
+
 
 def fullreset():
     reset()
     txtOutput.delete('0.0', END)
     txtOutput1.delete('0.0', END)
+
 
 def checkForWin():
     global game
@@ -181,7 +188,7 @@ buttongenerate = Button(tk, text="Generate", font="Times 12 bold", bg="red4", fg
                         command=generate).place(x=159, y=445)
 
 buttonreset = Button(tk, text="Reset", font="Times 12 bold", bg="red4", fg="white", height=2, width=10,
-                        command=fullreset).place(x=290, y=445)
+                     command=fullreset).place(x=290, y=445)
 
 if debug:
     Label(tk, text="a", font="Times 10", bg="white").place(x=0, y=0)
@@ -205,7 +212,6 @@ vscroll.pack(side="right", fill="y")
 txtOutput.pack(side="left", fill="both", expand=True)
 
 txtFrame.place(x=450, y=60)
-
 
 txtFrame1 = Frame(tk, borderwidth=1, relief="sunken")
 txtOutput1 = Text(txtFrame1, wrap=NONE, height=10, width=40, borderwidth=0)
