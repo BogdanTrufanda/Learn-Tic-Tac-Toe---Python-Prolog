@@ -1,5 +1,3 @@
-#v1.33
-
 from threading import Thread
 from tkinter import *
 import tkinter.messagebox
@@ -93,6 +91,10 @@ def reset():
     flag = 0
     win = True
 
+def fullreset():
+    reset()
+    txtOutput.delete('0.0', END)
+    txtOutput1.delete('0.0', END)
 
 def checkForWin():
     global game
@@ -173,10 +175,13 @@ button9.grid(row=5, column=2)
 button_list = [button1, button2, button3, button4, button5, button6, button7, button8, button9]
 
 buttonlearn = Button(tk, text="Learn", font="Times 12 bold", bg="red4", fg="white", height=2, width=10,
-                     command=learn).place(x=88, y=445)
+                     command=learn).place(x=23, y=445)
 
 buttongenerate = Button(tk, text="Generate", font="Times 12 bold", bg="red4", fg="white", height=2, width=10,
-                        command=generate).place(x=230, y=445)
+                        command=generate).place(x=159, y=445)
+
+buttonreset = Button(tk, text="Reset", font="Times 12 bold", bg="red4", fg="white", height=2, width=10,
+                        command=fullreset).place(x=290, y=445)
 
 if debug:
     Label(tk, text="a", font="Times 10", bg="white").place(x=0, y=0)
@@ -200,12 +205,6 @@ vscroll.pack(side="right", fill="y")
 txtOutput.pack(side="left", fill="both", expand=True)
 
 txtFrame.place(x=450, y=60)
-
-# T = Text(tk, height=10, width=40)
-# T.place(x=450, y=280)
-#
-# T.insert(END,
-#          "")
 
 
 txtFrame1 = Frame(tk, borderwidth=1, relief="sunken")
