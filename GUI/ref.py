@@ -4,6 +4,7 @@ import tkinter.messagebox
 import random
 from time import sleep
 
+debug = True
 game, game1 = 1, 1
 tk = Tk()
 tk.title("Tic Tac Toe Game PBR")
@@ -175,22 +176,19 @@ buttonlearn = Button(tk, text="Learn", font="Times 12 bold", bg="red4", fg="whit
 buttongenerate = Button(tk, text="Generate", font="Times 12 bold", bg="red4", fg="white", height=2, width=10,
                         command=generate).place(x=230, y=445)
 
-w0 = Label(tk, text="Games", font="Times 15 bold", justify=RIGHT)
-w0.place(x=450, y=30)
+if debug:
+    Label(tk, text="a", font="Times 10", bg="white").place(x=0, y=0)
+    Label(tk, text="b", font="Times 10", bg="white").place(x=140, y=0)
+    Label(tk, text="c", font="Times 10", bg="white").place(x=280, y=0)
+    Label(tk, text="d", font="Times 10", bg="white").place(x=0, y=150)
+    Label(tk, text="e", font="Times 10", bg="white").place(x=140, y=150)
+    Label(tk, text="f", font="Times 10", bg="white").place(x=280, y=150)
+    Label(tk, text="g", font="Times 10", bg="white").place(x=0, y=300)
+    Label(tk, text="h", font="Times 10", bg="white").place(x=140, y=300)
+    Label(tk, text="i", font="Times 10", bg="white").place(x=280, y=300)
 
-w = Label(tk, text="Wins", font="Times 15 bold")
-w.place(x=450, y=250)
-
-Label(tk, text="a", font="Times 10", bg="white").place(x=0, y=0)
-Label(tk, text="b", font="Times 10", bg="white").place(x=140, y=0)
-Label(tk, text="c", font="Times 10", bg="white").place(x=280, y=0)
-Label(tk, text="d", font="Times 10", bg="white").place(x=0, y=150)
-Label(tk, text="e", font="Times 10", bg="white").place(x=140, y=150)
-Label(tk, text="f", font="Times 10", bg="white").place(x=280, y=150)
-Label(tk, text="g", font="Times 10", bg="white").place(x=0, y=300)
-Label(tk, text="h", font="Times 10", bg="white").place(x=140, y=300)
-Label(tk, text="i", font="Times 10", bg="white").place(x=280, y=300)
-
+Label(tk, text="Games", font="Times 15 bold", justify=RIGHT).place(x=450, y=30)
+Label(tk, text="Wins", font="Times 15 bold").place(x=450, y=250)
 txtFrame = Frame(tk, borderwidth=1, relief="sunken")
 txtOutput = Text(txtFrame, wrap=NONE, height=10, width=58, borderwidth=0)
 vscroll = Scrollbar(txtFrame, orient=VERTICAL, command=txtOutput.yview)
