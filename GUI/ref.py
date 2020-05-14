@@ -57,9 +57,10 @@ def learn():
 
 
 def generate():
+    global win
     reset()
     lista = []
-    index = random.randint(2, 5)
+    index = random.randint(1, 4)
     for _ in range(index):
         poz = random.choice(button_list)
         if poz not in lista:
@@ -118,6 +119,7 @@ def checkForWin():
         txtOutput1.see(END)
         game += 1
         reset()
+        return True
 
     elif flag == 8:
         # tkinter.messagebox.showinfo("Tic-Tac-Toe", "It is a Tie")
@@ -125,6 +127,7 @@ def checkForWin():
         txtOutput1.see(END)
         game += 1
         reset()
+        return True
 
     elif (button1["text"] == "0" and button2["text"] == "0" and button3["text"] == "0" or
           button4["text"] == "0" and button5["text"] == "0" and button6["text"] == "0" or
@@ -139,6 +142,8 @@ def checkForWin():
         txtOutput1.see(END)
         game += 1
         reset()
+        return True
+    return False
 
 
 buttons = StringVar()
