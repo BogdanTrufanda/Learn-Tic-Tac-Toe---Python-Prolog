@@ -3,79 +3,102 @@ from tkinter import *
 import tkinter.messagebox
 import random
 from time import sleep
+from pyswip import Prolog
 
-# from pyswip import Prolog, Functor, Variable, Query
-#
-# prolog = Prolog()
-# prolog.consult("test.pl")
-#
-# print(list(prolog.query("sal([1,2,3,4],B)")))
-#
-# for x in range(10):
-#     print(x)
+prolog = Prolog()
+prolog.consult("test.pl")
+list(prolog.query("init."))
 
-debug = True
-game, game1 = 1, 1
 tk = Tk()
-tk.title("Tic Tac Toe Game PBR")
+tk.title("PBR: Tic Tac Toe")
 tk.iconbitmap("index.ico")
 tk.geometry("1014x500+450+152")
 tk.resizable(0, 0)
 
+debug = True
+game, game1 = 1, 1
 bclick = True
 flag = 0
 win = False
-
 moves_list = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 
 
-# TODO: prolog
-
 def learn():
-    def local_learn():
-        global moves_list, win, editArea, game1
-        with open("games.csv", "r") as fd:
-            for x in fd.readlines():
-                reset()
-                win = False
-                x = x.strip("\n")
-                move = x.split(", ")
-                txtOutput.insert(END, str(game1) + "." + " ")
-                for y in range(len(move)):
-                    mov = move[y][0]
-                    play = move[y][1].upper()
-                    txtOutput.insert(END, str(mov) + str(play) + " ")
-                    if not win:
-                        btnClick(button_list[moves_list.index(mov)], play)
-                txtOutput.insert(END, "\n")
-                txtOutput.see(END)
-                game1 += 1
-                sleep(0.01)
+    # def local_learn():
+    global moves_list, win, game1
+    with open("../Prolog/games.csv", "r") as fd:
+        for x in fd.readlines():
+            reset()
+            win = False
+            x = x.strip("\n")
+            move = x.split(", ")
+            query = "learn({}).".format(move)
+            list(prolog.query(query))
+            txtOutput.insert(END, str(game1) + "." + " ")
+            for y in range(len(move)):
+                mov = move[y][0]
+                play = move[y][1].upper()
+                txtOutput.insert(END, str(mov) + str(play) + " ")
+                if not win:
+                    button_click(button_list[moves_list.index(mov)], play)
+            txtOutput.insert(END, "\n")
+            txtOutput.see(END)
+            game1 += 1
+            sleep(0.01)
+    val = list(prolog.query("display(A)."))
+    print("Val:\t", val[0]["A"])
 
-    c = Thread(target=local_learn)
-    c.start()
+    # c = Thread(target=local_learn)
+    # c.start()
 
 
 def generate():
     global win
     reset()
     lista = []
-    index = random.randint(1, 4)
+    index = random.randint(2, 4)
     for _ in range(index):
         poz = random.choice(button_list)
         if poz not in lista:
             lista.append(poz)
-            btnClick(poz)
+            button_click(poz)
 
 
-def btnClick(buttons, player=None):
-    global bclick, flag, player2_name, player1_name
+def verify():
+    listax = []
+    lista0 = []
+    for index, button in enumerate(button_list):
+        if button["text"] == "X":
+            listax.append("{}{}".format(moves_list[index], "x"))
+        if button["text"] == "0":
+            lista0.append("{}{}".format(moves_list[index], "0"))
+    print(listax)
+    print(lista0)
+
+    lista_mare = []
+    for x in range(min(len(listax), len(lista0))):
+        lista_mare.append(listax[x])
+        lista_mare.append(lista0[x])
+
+    if len(listax) > len(lista0):
+        lista_mare.append(listax[-1])
+    elif len(listax) < len(lista0):
+        lista_mare.append(lista0[-1])
+
+    print(lista_mare)
+    query = "verify({},V).".format(lista_mare)
+    print(list(prolog.query(query)))
+
+
+def button_click(buttons, player=None):
+    global bclick, flag
     if buttons["text"] == " " and bclick:
         if player is None:
             player = "X"
         buttons["text"] = player
         bclick = False
-        checkForWin()
+        tk.title("PBR: Tic Tac Toe          Now Playing: 0")
+        win_check()
         flag += 1
 
     elif buttons["text"] == " " and not bclick:
@@ -83,7 +106,8 @@ def btnClick(buttons, player=None):
             player = "0"
         buttons["text"] = player
         bclick = True
-        checkForWin()
+        tk.title("PBR: Tic Tac Toe          Now Playing: X")
+        win_check()
         flag += 1
     else:
         tkinter.messagebox.showinfo("Tic-Tac-Toe", "Button already Clicked!")
@@ -99,12 +123,14 @@ def reset():
 
 
 def fullreset():
+    global game, game1
     reset()
+    game, game1 = 1, 1
     txtOutput.delete('0.0', END)
     txtOutput1.delete('0.0', END)
 
 
-def checkForWin():
+def win_check():
     global game
     if (button1["text"] == "X" and button2["text"] == "X" and button3["text"] == "X" or
             button4["text"] == "X" and button5["text"] == "X" and button6["text"] == "X" or
@@ -146,42 +172,40 @@ def checkForWin():
     return False
 
 
-buttons = StringVar()
-
 button1 = Button(tk, text=" ", font="Times 20 bold", bg="white", fg="black", height=4, width=8,
-                 command=lambda: btnClick(button1))
+                 command=lambda: button_click(button1))
 button1.grid(row=3, column=0)
 
 button2 = Button(tk, text=" ", font="Times 20 bold", bg="white", fg="black", height=4, width=8,
-                 command=lambda: btnClick(button2))
+                 command=lambda: button_click(button2))
 button2.grid(row=3, column=1)
 
 button3 = Button(tk, text=" ", font="Times 20 bold", bg="white", fg="black", height=4, width=8,
-                 command=lambda: btnClick(button3))
+                 command=lambda: button_click(button3))
 button3.grid(row=3, column=2)
 
 button4 = Button(tk, text=" ", font="Times 20 bold", bg="white", fg="black", height=4, width=8,
-                 command=lambda: btnClick(button4))
+                 command=lambda: button_click(button4))
 button4.grid(row=4, column=0)
 
 button5 = Button(tk, text=" ", font="Times 20 bold", bg="white", fg="black", height=4, width=8,
-                 command=lambda: btnClick(button5))
+                 command=lambda: button_click(button5))
 button5.grid(row=4, column=1)
 
 button6 = Button(tk, text=" ", font="Times 20 bold", bg="white", fg="black", height=4, width=8,
-                 command=lambda: btnClick(button6))
+                 command=lambda: button_click(button6))
 button6.grid(row=4, column=2)
 
 button7 = Button(tk, text=" ", font="Times 20 bold", bg="white", fg="black", height=4, width=8,
-                 command=lambda: btnClick(button7))
+                 command=lambda: button_click(button7))
 button7.grid(row=5, column=0)
 
 button8 = Button(tk, text=" ", font="Times 20 bold", bg="white", fg="black", height=4, width=8,
-                 command=lambda: btnClick(button8))
+                 command=lambda: button_click(button8))
 button8.grid(row=5, column=1)
 
 button9 = Button(tk, text=" ", font="Times 20 bold", bg="white", fg="black", height=4, width=8,
-                 command=lambda: btnClick(button9))
+                 command=lambda: button_click(button9))
 button9.grid(row=5, column=2)
 
 button_list = [button1, button2, button3, button4, button5, button6, button7, button8, button9]
@@ -192,8 +216,11 @@ buttonlearn = Button(tk, text="Learn", font="Times 12 bold", bg="red4", fg="whit
 buttongenerate = Button(tk, text="Generate", font="Times 12 bold", bg="red4", fg="white", height=2, width=10,
                         command=generate).place(x=159, y=445)
 
+buttongo = Button(tk, text="Verify", font="Times 12 bold", bg="red4", fg="white", height=2, width=10,
+                  command=verify).place(x=290, y=445)
+
 buttonreset = Button(tk, text="Reset", font="Times 12 bold", bg="red4", fg="white", height=2, width=10,
-                     command=fullreset).place(x=290, y=445)
+                     command=fullreset).place(x=845, y=333)
 
 if debug:
     Label(tk, text="a", font="Times 10", bg="white").place(x=0, y=0)
