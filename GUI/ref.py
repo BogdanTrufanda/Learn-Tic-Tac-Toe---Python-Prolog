@@ -120,12 +120,13 @@ def verify():
         if val:
             mutari.append(val[0]['V'].decode('ascii'))
 
-    print(mutari)
     mutari = list(set(mutari))
+    while '\n' in mutari:
+        mutari.remove('\n')
     for index, button in enumerate(button_list):
         if button["text"] == "X" or button["text"] == "0":
-            print(mutari.index(moves_list[index]))
-                # mutari.remove(moves_list[index])
+            if moves_list[index] in mutari:
+                mutari.remove(moves_list[index])
     print(mutari)
 
 
