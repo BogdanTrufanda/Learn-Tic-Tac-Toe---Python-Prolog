@@ -17,7 +17,7 @@ tk.geometry("1014x500+450+152")
 tk.resizable(0, 0)
 
 debug = True
-game, game1 = 1, 1
+game, game1, game2 = 1, 1, 1
 bclick = True
 flag = 0
 win = False
@@ -27,7 +27,8 @@ moves_list = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 def learn():
     # def local_learn():
     global moves_list, win, game1
-    with open("../Prolog/games.csv", "r") as fd:
+    l.config(text='Games')
+    with open("games.csv", "r") as fd:
         for x in fd.readlines():
             reset()
             win = False
@@ -46,8 +47,8 @@ def learn():
             txtOutput.see(END)
             game1 += 1
             sleep(0.01)
-    # val = list(prolog.query("display(A)."))
-    # print("Val:\t", val[0]["A"])
+    val = list(prolog.query("display(A)."))
+    print("Val:\t", val[0]["A"])
 
     # c = Thread(target=local_learn)
     # c.start()
@@ -71,7 +72,13 @@ def combine(lista):
     return list(ll)
 
 
+#
 def verify():
+    global game2
+    if l['text'] == "Games":
+        txtOutput.delete('0.0', END)
+        txtOutput1.delete('0.0', END)
+    l.config(text='Generated Match')
     listax = []
     lista0 = []
     lista2x = []
@@ -106,6 +113,13 @@ def verify():
         lista_mare2.append(lista20[-1])
 
     mutari = []
+    txtOutput.insert(END, str(game2) + ".\n" + "Made moves:\t")
+    game2 += 1
+    string = ""
+    for x in lista_mare:
+        string += x + " "
+    txtOutput.insert(END, string + "\n")
+    txtOutput.insert(END, "Remaining valid moves:\t")
     lista_mare = combine(lista_mare)
     for x in lista_mare:
         query = "verify({},V).".format(x)
@@ -128,6 +142,56 @@ def verify():
             if moves_list[index] in mutari:
                 mutari.remove(moves_list[index])
     print(mutari)
+    if not mutari:
+        txtOutput.insert(END, "Nothing detected!\n")
+    else:
+        string2 = ""
+        for x in mutari:
+            string2 += x + " "
+        txtOutput.insert(END, string2 + "\n")
+    txtOutput.see(END)
+
+
+#
+
+#
+# def verify():
+#     global game2
+#     if l['text'] == "Games":
+#         txtOutput.delete('0.0', END)
+#         txtOutput1.delete('0.0', END)
+#     l.config(text='Generated Match')
+#     listax = []
+#     lista0 = []
+#     for index, button in enumerate(button_list):
+#         if button["text"] == "X":
+#             listax.append("{}{}".format(moves_list[index], "x"))
+#         if button["text"] == "0":
+#             lista0.append("{}{}".format(moves_list[index], "0"))
+#
+#     lista_mare = []
+#     for x in range(min(len(listax), len(lista0))):
+#         lista_mare.append(listax[x])
+#         lista_mare.append(lista0[x])
+#     if len(listax) > len(lista0):
+#         lista_mare.append(listax[-1])
+#     elif len(listax) < len(lista0):
+#         lista_mare.append(lista0[-1])
+#
+#     print(lista_mare)
+#     txtOutput.insert(END, str(game2) + ".\n" + "Made moves:\t")
+#     game2 += 1
+#     string = ""
+#     for x in lista_mare:
+#         string += x + " "
+#     txtOutput.insert(END, string + "\n")
+#     txtOutput.insert(END, "Remaining valid moves:\n")
+#
+#     lista_mare = combine(lista_mare)
+#     for x in lista_mare:
+#         query = "verify({},V,R).".format(x)
+#         val = list(prolog.query(query))
+#         print("Val:\t", val)
 
 
 def button_click(buttons, player=None):
@@ -165,7 +229,7 @@ def reset():
 def fullreset():
     global game, game1
     reset()
-    game, game1 = 1, 1
+    game, game1, game2 = 1, 1, 1
     txtOutput.delete('0.0', END)
     txtOutput1.delete('0.0', END)
 
@@ -273,7 +337,8 @@ if debug:
     Label(tk, text="h", font="Times 10", bg="white").place(x=140, y=300)
     Label(tk, text="i", font="Times 10", bg="white").place(x=280, y=300)
 
-Label(tk, text="Games", font="Times 15 bold", justify=RIGHT).place(x=450, y=30)
+l = Label(tk, text="Games", font="Times 15 bold", justify=RIGHT)
+l.place(x=450, y=30)
 Label(tk, text="Wins", font="Times 15 bold").place(x=450, y=250)
 txtFrame = Frame(tk, borderwidth=1, relief="sunken")
 txtOutput = Text(txtFrame, wrap=NONE, height=10, width=58, borderwidth=0)
