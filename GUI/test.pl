@@ -9,9 +9,11 @@ learn(LISTA) :- 			nb_getval(database, LISTA_MARE),
 display(A) :- 				nb_getval(database, LISTA_MARE),
 							A = LISTA_MARE.
 				
-verify(LISTA, Result) :- 	nb_getval(database, LISTA_MARE), 
+verify(LISTA, Result, Val) :- 	nb_getval(database, LISTA_MARE), 
 							atomics_to_string(LISTA, Search),
 							sub_string(LISTA_MARE, Before, _, _, Search),
-							Index is Before + 4,
-							sub_string(LISTA_MARE, Index, 1, _, Result).
+							length(LISTA, LEN),
+							Index is Before + LEN * 2,
+							sub_string(LISTA_MARE, Index, 1, _, Result),
+							(Result =:= "\n" -> Val is 1; Val is 0).
 				

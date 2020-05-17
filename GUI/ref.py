@@ -4,6 +4,7 @@ import tkinter.messagebox
 import random
 from time import sleep
 from pyswip import Prolog
+import itertools
 
 prolog = Prolog()
 prolog.consult("test.pl")
@@ -64,6 +65,12 @@ def generate():
             button_click(poz)
 
 
+def combine(lista):
+    x = list(itertools.permutations(lista))
+    ll = map(list, x)
+    return list(ll)
+
+
 def verify():
     listax = []
     lista0 = []
@@ -72,8 +79,6 @@ def verify():
             listax.append("{}{}".format(moves_list[index], "x"))
         if button["text"] == "0":
             lista0.append("{}{}".format(moves_list[index], "0"))
-    print(listax)
-    print(lista0)
 
     lista_mare = []
     for x in range(min(len(listax), len(lista0))):
@@ -86,8 +91,11 @@ def verify():
         lista_mare.append(lista0[-1])
 
     print(lista_mare)
-    query = "verify({},V).".format(lista_mare)
-    print(list(prolog.query(query)))
+    lista_mare = combine(lista_mare)
+    for x in lista_mare:
+        query = "verify({},V,R).".format(x)
+        val = list(prolog.query(query))
+        print("Val:\t", val)
 
 
 def button_click(buttons, player=None):
