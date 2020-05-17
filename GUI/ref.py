@@ -46,8 +46,8 @@ def learn():
             txtOutput.see(END)
             game1 += 1
             sleep(0.01)
-    val = list(prolog.query("display(A)."))
-    print("Val:\t", val[0]["A"])
+    # val = list(prolog.query("display(A)."))
+    # print("Val:\t", val[0]["A"])
 
     # c = Thread(target=local_learn)
     # c.start()
@@ -74,11 +74,16 @@ def combine(lista):
 def verify():
     listax = []
     lista0 = []
+    lista2x = []
+    lista20 = []
     for index, button in enumerate(button_list):
         if button["text"] == "X":
             listax.append("{}{}".format(moves_list[index], "x"))
+            lista20.append("{}{}".format(moves_list[index], "0"))
+
         if button["text"] == "0":
             lista0.append("{}{}".format(moves_list[index], "0"))
+            lista2x.append("{}{}".format(moves_list[index], "x"))
 
     lista_mare = []
     for x in range(min(len(listax), len(lista0))):
@@ -90,12 +95,38 @@ def verify():
     elif len(listax) < len(lista0):
         lista_mare.append(lista0[-1])
 
-    print(lista_mare)
+    lista_mare2 = []
+    for x in range(min(len(lista2x), len(lista20))):
+        lista_mare2.append(lista2x[x])
+        lista_mare2.append(lista20[x])
+
+    if len(lista2x) > len(lista20):
+        lista_mare2.append(lista2x[-1])
+    elif len(lista2x) < len(lista20):
+        lista_mare2.append(lista20[-1])
+
+    mutari = []
     lista_mare = combine(lista_mare)
     for x in lista_mare:
-        query = "verify({},V,R).".format(x)
+        query = "verify({},V).".format(x)
         val = list(prolog.query(query))
-        print("Val:\t", val)
+        if val:
+            mutari.append(val[0]['V'].decode('ascii'))
+
+    lista_mare2 = combine(lista_mare2)
+    for x in lista_mare2:
+        query = "verify({},V).".format(x)
+        val = list(prolog.query(query))
+        if val:
+            mutari.append(val[0]['V'].decode('ascii'))
+
+    print(mutari)
+    mutari = list(set(mutari))
+    for index, button in enumerate(button_list):
+        if button["text"] == "X" or button["text"] == "0":
+            print(mutari.index(moves_list[index]))
+                # mutari.remove(moves_list[index])
+    print(mutari)
 
 
 def button_click(buttons, player=None):
