@@ -84,26 +84,34 @@ def combine(lista):
     return list(ll)
 
 
-#
+def remaining_spots(tabla):
+    remaining = []
+    return remaining
+
+
 def verify():
     global game2
     if l['text'] == "Games":
         txtOutput.delete('0.0', END)
         txtOutput1.delete('0.0', END)
     l.config(text='Generated Match')
+    tabla = []
     listax = []
     lista0 = []
     lista2x = []
     lista20 = []
     for index, button in enumerate(button_list):
         if button["text"] == "X":
+            tabla.append(moves_list[index])
             listax.append("{}{}".format(moves_list[index], "x"))
             lista20.append("{}{}".format(moves_list[index], "0"))
 
         if button["text"] == "0":
+            tabla.append(moves_list[index])
             lista0.append("{}{}".format(moves_list[index], "0"))
             lista2x.append("{}{}".format(moves_list[index], "x"))
 
+    remaining_spots(tabla)
     lista_mare = []
     for x in range(min(len(listax), len(lista0))):
         lista_mare.append(listax[x])
@@ -125,13 +133,13 @@ def verify():
         lista_mare2.append(lista20[-1])
 
     mutari = []
-    txtOutput.insert(END, str(game2) + ".\n" + "Made moves:\t")
+    txtOutput.insert(END, str(game2) + ".\n" + "Current board state:\t")
     game2 += 1
     string = ""
     for x in lista_mare:
         string += x + " "
     txtOutput.insert(END, string + "\n")
-    txtOutput.insert(END, "Remaining valid moves:\t")
+    txtOutput.insert(END, "Valid moves:\t")
     lista_mare = combine(lista_mare)
     for x in lista_mare:
         query = "verify({},V).".format(x)
@@ -155,11 +163,11 @@ def verify():
                 mutari.remove(moves_list[index])
     print(mutari)
     if not mutari:
-        txtOutput.insert(END, "Nothing detected!\n")
+        txtOutput.insert(END, "Prolog didn't find any move!\n")
     else:
         string2 = ""
         for x in mutari:
-            string2 += x + " "
+            string2 += x + ", "
         txtOutput.insert(END, string2 + "\n")
     txtOutput.see(END)
 
