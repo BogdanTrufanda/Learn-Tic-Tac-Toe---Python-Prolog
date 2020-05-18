@@ -84,8 +84,11 @@ def combine(lista):
     return list(ll)
 
 
-def remaining_spots(tabla):
+def remaining_spots():
     remaining = []
+    for index, button in enumerate(button_list):
+        if button["text"] != "X" and button["text"] != "0":
+            remaining.append(moves_list[index])
     return remaining
 
 
@@ -95,23 +98,19 @@ def verify():
         txtOutput.delete('0.0', END)
         txtOutput1.delete('0.0', END)
     l.config(text='Generated Match')
-    tabla = []
     listax = []
     lista0 = []
     lista2x = []
     lista20 = []
     for index, button in enumerate(button_list):
         if button["text"] == "X":
-            tabla.append(moves_list[index])
             listax.append("{}{}".format(moves_list[index], "x"))
             lista20.append("{}{}".format(moves_list[index], "0"))
 
         if button["text"] == "0":
-            tabla.append(moves_list[index])
             lista0.append("{}{}".format(moves_list[index], "0"))
             lista2x.append("{}{}".format(moves_list[index], "x"))
 
-    remaining_spots(tabla)
     lista_mare = []
     for x in range(min(len(listax), len(lista0))):
         lista_mare.append(listax[x])
@@ -135,6 +134,9 @@ def verify():
     mutari = []
     txtOutput.insert(END, str(game2) + ".\n" + "Current board state:\t")
     game2 += 1
+
+    remaining_spots()
+
     string = ""
     for x in lista_mare:
         string += x + " "
