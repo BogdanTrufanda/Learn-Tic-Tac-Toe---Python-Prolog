@@ -26,6 +26,11 @@ moves_list = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 
 def learn():
     query = []
+    with open("games.csv", "r") as fd:
+        for x in fd.readlines():
+            x = x.strip("\n")
+            move = x.split(", ")
+            query.append("learn({}).".format(move))
 
     def local_learn():
         global moves_list, win, game1, game2
@@ -37,7 +42,6 @@ def learn():
                 win = False
                 x = x.strip("\n")
                 move = x.split(", ")
-                query.append("learn({}).".format(move))
                 txtOutput.insert(END, str(game1) + "." + " ")
                 for y in range(len(move)):
                     mov = move[y][0]
@@ -52,7 +56,6 @@ def learn():
 
     c = Thread(target=local_learn)
     c.start()
-    c.join()
     for x in query:
         list(prolog.query(x))
     val = list(prolog.query("display(A)."))
