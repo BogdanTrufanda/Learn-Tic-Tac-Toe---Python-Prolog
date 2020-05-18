@@ -25,33 +25,38 @@ moves_list = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 
 
 def learn():
-    # def local_learn():
-    global moves_list, win, game1
-    l.config(text='Games')
-    with open("games.csv", "r") as fd:
-        for x in fd.readlines():
-            reset()
-            win = False
-            x = x.strip("\n")
-            move = x.split(", ")
-            query = "learn({}).".format(move)
-            list(prolog.query(query))
-            txtOutput.insert(END, str(game1) + "." + " ")
-            for y in range(len(move)):
-                mov = move[y][0]
-                play = move[y][1].upper()
-                txtOutput.insert(END, str(mov) + str(play) + " ")
-                if not win:
-                    button_click(button_list[moves_list.index(mov)], play)
-            txtOutput.insert(END, "\n")
-            txtOutput.see(END)
-            game1 += 1
-            sleep(0.01)
+    query = []
+
+    def local_learn():
+        global moves_list, win, game1, game2
+        game2 = 1
+        l.config(text='Games')
+        with open("games.csv", "r") as fd:
+            for x in fd.readlines():
+                reset()
+                win = False
+                x = x.strip("\n")
+                move = x.split(", ")
+                query.append("learn({}).".format(move))
+                txtOutput.insert(END, str(game1) + "." + " ")
+                for y in range(len(move)):
+                    mov = move[y][0]
+                    play = move[y][1].upper()
+                    txtOutput.insert(END, str(mov) + str(play) + " ")
+                    if not win:
+                        button_click(button_list[moves_list.index(mov)], play)
+                txtOutput.insert(END, "\n")
+                txtOutput.see(END)
+                game1 += 1
+                sleep(0.02)
+
+    c = Thread(target=local_learn)
+    c.start()
+    c.join()
+    for x in query:
+        list(prolog.query(x))
     val = list(prolog.query("display(A)."))
     print("Val:\t", val[0]["A"])
-
-    # c = Thread(target=local_learn)
-    # c.start()
 
 
 def generate():
@@ -152,48 +157,6 @@ def verify():
     txtOutput.see(END)
 
 
-#
-
-#
-# def verify():
-#     global game2
-#     if l['text'] == "Games":
-#         txtOutput.delete('0.0', END)
-#         txtOutput1.delete('0.0', END)
-#     l.config(text='Generated Match')
-#     listax = []
-#     lista0 = []
-#     for index, button in enumerate(button_list):
-#         if button["text"] == "X":
-#             listax.append("{}{}".format(moves_list[index], "x"))
-#         if button["text"] == "0":
-#             lista0.append("{}{}".format(moves_list[index], "0"))
-#
-#     lista_mare = []
-#     for x in range(min(len(listax), len(lista0))):
-#         lista_mare.append(listax[x])
-#         lista_mare.append(lista0[x])
-#     if len(listax) > len(lista0):
-#         lista_mare.append(listax[-1])
-#     elif len(listax) < len(lista0):
-#         lista_mare.append(lista0[-1])
-#
-#     print(lista_mare)
-#     txtOutput.insert(END, str(game2) + ".\n" + "Made moves:\t")
-#     game2 += 1
-#     string = ""
-#     for x in lista_mare:
-#         string += x + " "
-#     txtOutput.insert(END, string + "\n")
-#     txtOutput.insert(END, "Remaining valid moves:\n")
-#
-#     lista_mare = combine(lista_mare)
-#     for x in lista_mare:
-#         query = "verify({},V,R).".format(x)
-#         val = list(prolog.query(query))
-#         print("Val:\t", val)
-
-
 def button_click(buttons, player=None):
     global bclick, flag
     if buttons["text"] == " " and bclick:
@@ -218,18 +181,19 @@ def button_click(buttons, player=None):
 
 
 def reset():
-    global flag, win, bclick
+    global flag, win, bclick, game2
     button1["text"] = button2["text"] = button3["text"] = button4["text"] = button5["text"] = button6["text"] = \
         button7["text"] = button8["text"] = button9["text"] = " "
     flag = 0
     win = True
     bclick = True
+    game2 = 1
 
 
 def fullreset():
     global game, game1
     reset()
-    game, game1, game2 = 1, 1, 1
+    game, game1 = 1, 1
     txtOutput.delete('0.0', END)
     txtOutput1.delete('0.0', END)
 
