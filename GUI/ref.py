@@ -63,8 +63,12 @@ def learn():
 
 
 def generate():
-    global win
+    global game, game2, win
+    game = 1
     reset()
+    txtOutput.delete('0.0', END)
+    txtOutput1.delete('0.0', END)
+    l.config(text='Generated Match')
     lista = []
     index = random.randint(2, 4)
     for _ in range(index):
