@@ -133,11 +133,11 @@ def dontlethimwin():
         if contory == 2:
             pozitie = find_pos(x, "GG")
             if pozitie is not None:
-                dontwin.append(f"\t0 castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
+                dontwin.append(f" - 0 castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
         elif contorx == 2:
             pozitie = find_pos(x, "GG")
             if pozitie is not None:
-                dontwin.append(f"\tX castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
+                dontwin.append(f" - X castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
 
     for x in range(3):
         contorx = 0
@@ -152,11 +152,11 @@ def dontlethimwin():
         if contory == 2:
             pozitie = find_pos(coloana, "GG")
             if pozitie is not None:
-                dontwin.append(f"\t0 castiga daca pune pe {board_matrix[pozitie][x]}")
+                dontwin.append(f" - 0 castiga daca pune pe {board_matrix[pozitie][x]}")
         elif contorx == 2:
             pozitie = find_pos(coloana, "GG")
             if pozitie is not None:
-                dontwin.append(f"\tX castiga daca pune pe {board_matrix[pozitie][x]}")
+                dontwin.append(f" - X castiga daca pune pe {board_matrix[pozitie][x]}")
 
     diag1 = [table[i][i] for i in range(3)]
     diag2 = ([table[3 - 1 - i][i] for i in range(3 - 1, -1, -1)])
@@ -171,11 +171,11 @@ def dontlethimwin():
     if contory == 2:
         pozitie = find_pos(diag1, "GG")
         if pozitie is not None:
-            dontwin.append(f"\t0 castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+            dontwin.append(f" - 0 castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
     elif contorx == 2:
         pozitie = find_pos(diag1, "GG")
         if pozitie is not None:
-            dontwin.append(f"\tX castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+            dontwin.append(f" - X castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
 
     contorx = 0
     contory = 0
@@ -188,12 +188,12 @@ def dontlethimwin():
         pozitie = find_pos(diag2, "GG")
         if pozitie is not None:
             dontwin.append(
-                f"\t0 castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
+                f" - 0 castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
     elif contorx == 2:
         pozitie = find_pos(diag2, "GG")
         if pozitie is not None:
             dontwin.append(
-                f"\tX castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
+                f" - X castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
     for x in dontwin:
         txtOutput.insert(END, str(x) + "\n")
 
