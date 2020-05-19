@@ -284,7 +284,7 @@ def verify():
     for x in remaining:
         string += x + ", "
     string = string[:-2]
-    txtOutput.insert(END, "Python Valid moves:\t")
+    txtOutput.insert(END, "Remaining empty spaces:\t")
     txtOutput.insert(END, str(string) + "\n")
 
     dontlethimwin()
@@ -331,6 +331,7 @@ def fullreset():
     game, game1 = 1, 1
     txtOutput.delete('0.0', END)
     txtOutput1.delete('0.0', END)
+    tk.title("PBR: Tic Tac Toe")
 
 
 def win_check():
@@ -440,7 +441,7 @@ l = Label(tk, text="Games", font="Times 15 bold", justify=RIGHT)
 l.place(x=450, y=30)
 Label(tk, text="Wins", font="Times 15 bold").place(x=450, y=250)
 txtFrame = Frame(tk, borderwidth=1, relief="sunken")
-txtOutput = Text(txtFrame, wrap=NONE, height=10, width=58, borderwidth=0)
+txtOutput = Text(txtFrame, wrap=NONE, height=10, width=65, borderwidth=0)
 vscroll = Scrollbar(txtFrame, orient=VERTICAL, command=txtOutput.yview)
 txtOutput["yscroll"] = vscroll.set
 
