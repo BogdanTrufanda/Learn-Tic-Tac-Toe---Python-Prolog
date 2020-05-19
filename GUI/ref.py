@@ -21,16 +21,24 @@ game, game1, game2 = 1, 1, 1
 bclick = True
 flag = 0
 win = False
+board_matrix = [["a", "b", "c"], ["d", "e", "f"], ["g", "h", "i"]]
 moves_list = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+learned = False
 
 
 def learn():
-    query = []
-    with open("games.csv", "r") as fd:
-        for x in fd.readlines():
-            x = x.strip("\n")
-            move = x.split(", ")
-            query.append("learn({}).".format(move))
+    fullreset()
+    global learned
+    if not learned:
+        learned = True
+        with open("games.csv", "r") as fd:
+            for x in fd.readlines():
+                x = x.strip("\n")
+                move = x.split(", ")
+                query = "learn({}).".format(move)
+                list(prolog.query(query))
+        val = list(prolog.query("display(A)."))
+        print("Val:\t", val[0]["A"])
 
     def local_learn():
         global moves_list, win, game1, game2
@@ -56,10 +64,6 @@ def learn():
 
     c = Thread(target=local_learn)
     c.start()
-    for x in query:
-        list(prolog.query(x))
-    val = list(prolog.query("display(A)."))
-    print("Val:\t", val[0]["A"])
 
 
 def generate():
@@ -90,6 +94,108 @@ def remaining_spots():
         if button["text"] != "X" and button["text"] != "0":
             remaining.append(moves_list[index])
     return remaining
+
+
+def find_pos(lista, player):
+    for x in lista:
+        if player in x:
+            return lista.index(x)
+
+
+def dontlethimwin():
+    global board_matrix
+
+    moves_lista = []
+    for index, button in enumerate(button_list):
+        if button["text"] == "X":
+            moves_lista.append("{}{}".format(moves_list[index], "X"))
+        elif button["text"] == "0":
+            moves_lista.append("{}{}".format(moves_list[index], "0"))
+        else:
+            moves_lista.append("GG")
+
+    table = [moves_lista[x:x + 3] for x in range(0, len(moves_lista), 3)]
+    print("TABLE")
+    for x in table:
+        print(x)
+
+    txtOutput.insert(END, "Prevention System:\n")
+    dontwin = []
+
+    for x in table:
+        contorx = 0
+        contory = 0
+        for y in x:
+            if "0" in y:
+                contory += 1
+            elif "X" in y:
+                contorx += 1
+        if contory == 2:
+            pozitie = find_pos(x, "GG")
+            if pozitie is not None:
+                dontwin.append(f"\t0 castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
+        elif contorx == 2:
+            pozitie = find_pos(x, "GG")
+            if pozitie is not None:
+                dontwin.append(f"\tX castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
+
+    for x in range(3):
+        contorx = 0
+        contory = 0
+        coloana = []
+        for y in range(3):
+            coloana.append(table[y][x])
+            if "0" in table[y][x][1]:
+                contory += 1
+            elif "X" in table[y][x][1]:
+                contorx += 1
+        if contory == 2:
+            pozitie = find_pos(coloana, "GG")
+            if pozitie is not None:
+                dontwin.append(f"\t0 castiga daca pune pe {board_matrix[pozitie][x]}")
+        elif contorx == 2:
+            pozitie = find_pos(coloana, "GG")
+            if pozitie is not None:
+                dontwin.append(f"\tX castiga daca pune pe {board_matrix[pozitie][x]}")
+
+    diag1 = [table[i][i] for i in range(3)]
+    diag2 = ([table[3 - 1 - i][i] for i in range(3 - 1, -1, -1)])
+
+    contorx = 0
+    contory = 0
+    for x in diag1:
+        if "0" in x[1]:
+            contory += 1
+        elif "X" in x[1]:
+            contorx += 1
+    if contory == 2:
+        pozitie = find_pos(diag1, "GG")
+        if pozitie is not None:
+            dontwin.append(f"\t0 castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+    elif contorx == 2:
+        pozitie = find_pos(diag1, "GG")
+        if pozitie is not None:
+            dontwin.append(f"\tX castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+
+    contorx = 0
+    contory = 0
+    for x in diag2:
+        if "0" in x[1]:
+            contory += 1
+        elif "X" in x[1]:
+            contorx += 1
+    if contory == 2:
+        pozitie = find_pos(diag2, "GG")
+        if pozitie is not None:
+            dontwin.append(
+                f"\t0 castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
+    elif contorx == 2:
+        pozitie = find_pos(diag2, "GG")
+        if pozitie is not None:
+            dontwin.append(
+                f"\tX castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
+    for x in dontwin:
+        txtOutput.insert(END, str(x) + "\n")
 
 
 def verify():
@@ -134,14 +240,14 @@ def verify():
     mutari = []
     txtOutput.insert(END, str(game2) + ".\n" + "Current board state:\t")
     game2 += 1
-
-    remaining_spots()
-
     string = ""
     for x in lista_mare:
-        string += x + " "
+        string += x + ", "
+    string = string[:-2]
     txtOutput.insert(END, string + "\n")
-    txtOutput.insert(END, "Valid moves:\t")
+
+    txtOutput.insert(END, "Prolog Valid moves:\t")
+
     lista_mare = combine(lista_mare)
     for x in lista_mare:
         query = "verify({},V).".format(x)
@@ -170,7 +276,19 @@ def verify():
         string2 = ""
         for x in mutari:
             string2 += x + ", "
+        string2 = string2[:-2]
         txtOutput.insert(END, string2 + "\n")
+
+    remaining = remaining_spots()
+    string = ""
+    for x in remaining:
+        string += x + ", "
+    string = string[:-2]
+    txtOutput.insert(END, "Python Valid moves:\t")
+    txtOutput.insert(END, str(string) + "\n")
+
+    dontlethimwin()
+
     txtOutput.see(END)
 
 
