@@ -16,6 +16,7 @@ tk.iconbitmap("index.ico")
 tk.geometry("1014x500+450+152")
 tk.resizable(0, 0)
 
+prev = 0
 debug = True
 game, game1, game2 = 1, 1, 1
 bclick = True
@@ -67,8 +68,9 @@ def learn():
 
 
 def generate():
-    global game, game2, win
+    global game, game2, win, prev
     game = 1
+    prev = 0
     reset()
     txtOutput.delete('0.0', END)
     txtOutput1.delete('0.0', END)
@@ -103,7 +105,7 @@ def find_pos(lista, player):
 
 
 def dontlethimwin():
-    global board_matrix
+    global board_matrix, prev
 
     moves_lista = []
     for index, button in enumerate(button_list):
@@ -118,8 +120,7 @@ def dontlethimwin():
     print("TABLE")
     for x in table:
         print(x)
-
-    txtOutput.insert(END, "Prevention System:\n")
+    txtOutput.insert(END, "Prevention System:")
     dontwin = []
 
     for x in table:
@@ -134,10 +135,12 @@ def dontlethimwin():
             pozitie = find_pos(x, "GG")
             if pozitie is not None:
                 dontwin.append(f" - 0 castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
+                prev += 1
         elif contorx == 2:
             pozitie = find_pos(x, "GG")
             if pozitie is not None:
                 dontwin.append(f" - X castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
+                prev += 1
 
     for x in range(3):
         contorx = 0
@@ -153,10 +156,12 @@ def dontlethimwin():
             pozitie = find_pos(coloana, "GG")
             if pozitie is not None:
                 dontwin.append(f" - 0 castiga daca pune pe {board_matrix[pozitie][x]}")
+                prev += 1
         elif contorx == 2:
             pozitie = find_pos(coloana, "GG")
             if pozitie is not None:
                 dontwin.append(f" - X castiga daca pune pe {board_matrix[pozitie][x]}")
+                prev += 1
 
     diag1 = [table[i][i] for i in range(3)]
     diag2 = ([table[3 - 1 - i][i] for i in range(3 - 1, -1, -1)])
@@ -171,11 +176,15 @@ def dontlethimwin():
     if contory == 2:
         pozitie = find_pos(diag1, "GG")
         if pozitie is not None:
-            dontwin.append(f" - 0 castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+            dontwin.append(
+                f" - 0 castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+            prev += 1
     elif contorx == 2:
         pozitie = find_pos(diag1, "GG")
         if pozitie is not None:
-            dontwin.append(f" - X castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+            dontwin.append(
+                f" - X castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+            prev += 1
 
     contorx = 0
     contory = 0
@@ -189,13 +198,20 @@ def dontlethimwin():
         if pozitie is not None:
             dontwin.append(
                 f" - 0 castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
+            prev += 1
     elif contorx == 2:
         pozitie = find_pos(diag2, "GG")
         if pozitie is not None:
             dontwin.append(
                 f" - X castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
-    for x in dontwin:
-        txtOutput.insert(END, str(x) + "\n")
+            prev += 1
+
+    if prev == 0:
+        txtOutput.insert(END, "\tNo possible move at this state to win")
+    else:
+        for x in dontwin:
+            txtOutput.insert(END, "\n" + str(x))
+    txtOutput.insert(END, "\n" + "Prolog future generated move:\t")
 
 
 def verify():
@@ -284,7 +300,7 @@ def verify():
     for x in remaining:
         string += x + ", "
     string = string[:-2]
-    txtOutput.insert(END, "Remaining empty spaces:\t")
+    txtOutput.insert(END, "Python Valid moves:\t")
     txtOutput.insert(END, str(string) + "\n")
 
     dontlethimwin()
@@ -331,7 +347,6 @@ def fullreset():
     game, game1 = 1, 1
     txtOutput.delete('0.0', END)
     txtOutput1.delete('0.0', END)
-    tk.title("PBR: Tic Tac Toe")
 
 
 def win_check():
