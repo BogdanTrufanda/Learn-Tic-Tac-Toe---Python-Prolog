@@ -1,3 +1,4 @@
+from pathlib import Path
 from threading import Thread
 from tkinter import *
 import tkinter.messagebox
@@ -7,7 +8,9 @@ from pyswip import Prolog
 import itertools
 
 prolog = Prolog()
-prolog.consult("test.pl")
+prolog2 = Prolog()
+prolog.consult("../Prolog/test.pl")
+prolog2.consult("../Prolog/program.pl")
 list(prolog.query("init."))
 
 tk = Tk()
@@ -212,6 +215,12 @@ def dontlethimwin():
         for x in dontwin:
             txtOutput.insert(END, "\n" + str(x))
     txtOutput.insert(END, "\n" + "Prolog future generated move:\t")
+    input_tmp = str(Path("../Prolog/input.txt").resolve()).replace("\\", "/")
+    list(prolog.query("read_from_file('{}').".format(input_tmp)))
+
+    with open("output.txt", "r") as fd:
+        command = fd.read()
+        txtOutput.insert(END, moves_list[int(command[1])-1]+"\n\n")
 
 
 def verify():
@@ -261,6 +270,13 @@ def verify():
         string += x + ", "
     string = string[:-2]
     txtOutput.insert(END, string + "\n")
+
+    string_tmp = ""
+    for x in lista_mare:
+        string_tmp += str(x) + " "
+    print(string_tmp)
+    with open("../Prolog/input.txt", "w+") as fd:
+        fd.write(string_tmp)
 
     txtOutput.insert(END, "Prolog Valid moves:\t")
 
