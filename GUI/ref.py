@@ -1,11 +1,12 @@
 from pathlib import Path
 from threading import Thread
-from tkinter import *
-import tkinter.messagebox
+import itertools
+
 import random
 from time import sleep
 from pyswip import Prolog
-import itertools
+from tkinter import *
+import tkinter.messagebox
 
 prolog = Prolog()
 prolog2 = Prolog()
@@ -47,7 +48,7 @@ def learn():
     def local_learn():
         global moves_list, win, game1, game2
         game2 = 1
-        l.config(text='Games')
+        main_label.config(text='Games')
         with open("games.csv", "r") as fd:
             for x in fd.readlines():
                 reset()
@@ -77,7 +78,7 @@ def generate():
     reset()
     txtOutput.delete('0.0', END)
     txtOutput1.delete('0.0', END)
-    l.config(text='Generated Match')
+    main_label.config(text='Generated Match')
     lista = []
     index = random.randint(2, 4)
     for _ in range(index):
@@ -120,9 +121,9 @@ def dontlethimwin():
             moves_lista.append("GG")
 
     table = [moves_lista[x:x + 3] for x in range(0, len(moves_lista), 3)]
-    print("TABLE")
-    for x in table:
-        print(x)
+    # print("TABLE")
+    # for x in table:
+    #     print(x)
     txtOutput.insert(END, "Prevention System:")
     dontwin = []
 
@@ -137,12 +138,12 @@ def dontlethimwin():
         if contory == 2:
             pozitie = find_pos(x, "GG")
             if pozitie is not None:
-                dontwin.append(f" - 0 castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
+                dontwin.append(f" - 0 could make a win in the position {board_matrix[table.index(x)][pozitie]}")
                 prev += 1
         elif contorx == 2:
             pozitie = find_pos(x, "GG")
             if pozitie is not None:
-                dontwin.append(f" - X castiga daca pune pe {board_matrix[table.index(x)][pozitie]}")
+                dontwin.append(f" - X could make a win in the position {board_matrix[table.index(x)][pozitie]}")
                 prev += 1
 
     for x in range(3):
@@ -158,12 +159,12 @@ def dontlethimwin():
         if contory == 2:
             pozitie = find_pos(coloana, "GG")
             if pozitie is not None:
-                dontwin.append(f" - 0 castiga daca pune pe {board_matrix[pozitie][x]}")
+                dontwin.append(f" - 0 could make a win in the position {board_matrix[pozitie][x]}")
                 prev += 1
         elif contorx == 2:
             pozitie = find_pos(coloana, "GG")
             if pozitie is not None:
-                dontwin.append(f" - X castiga daca pune pe {board_matrix[pozitie][x]}")
+                dontwin.append(f" - X could make a win in the position {board_matrix[pozitie][x]}")
                 prev += 1
 
     diag1 = [table[i][i] for i in range(3)]
@@ -180,13 +181,13 @@ def dontlethimwin():
         pozitie = find_pos(diag1, "GG")
         if pozitie is not None:
             dontwin.append(
-                f" - 0 castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+                f" - 0 could make a win on the main diagonal in the position {board_matrix[pozitie][pozitie]}")
             prev += 1
     elif contorx == 2:
         pozitie = find_pos(diag1, "GG")
         if pozitie is not None:
             dontwin.append(
-                f" - X castiga daca pune pe diagonala principala in pozitia {board_matrix[pozitie][pozitie]}")
+                f" - X could win on the main diagonal in the position {board_matrix[pozitie][pozitie]}")
             prev += 1
 
     contorx = 0
@@ -200,13 +201,13 @@ def dontlethimwin():
         pozitie = find_pos(diag2, "GG")
         if pozitie is not None:
             dontwin.append(
-                f" - 0 castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
+                f" - 0 could win on the secondary diagonal in the position {board_matrix[pozitie][abs(2 - pozitie)]}")
             prev += 1
     elif contorx == 2:
         pozitie = find_pos(diag2, "GG")
         if pozitie is not None:
             dontwin.append(
-                f" - X castiga daca pune pe diagonala secundara in pozitia {board_matrix[pozitie][abs(2 - pozitie)]}")
+                f" - X could win on the secondary diagonal in the position {board_matrix[pozitie][abs(2 - pozitie)]}")
             prev += 1
 
     if prev == 0:
@@ -215,20 +216,24 @@ def dontlethimwin():
         for x in dontwin:
             txtOutput.insert(END, "\n" + str(x))
     txtOutput.insert(END, "\n" + "Prolog future generated move:\t")
-    input_tmp = str(Path("../Prolog/input.txt").resolve()).replace("\\", "/")
-    list(prolog.query("read_from_file('{}').".format(input_tmp)))
+    with open("../Prolog/input.txt", "r") as fd:
+        ceva = fd.read()
+    if ceva != "None":
+        input_tmp = str(Path("../Prolog/input.txt").resolve()).replace("\\", "/")
+        list(prolog.query("read_from_file('{}').".format(input_tmp)))
 
-    with open("output.txt", "r") as fd:
-        command = fd.read()
-        txtOutput.insert(END, moves_list[int(command[1])-1]+"\n\n")
+        with open("output.txt", "r") as fd:
+            command = fd.read()
+            txtOutput.insert(END, moves_list[int(command[1]) - 1])
+    txtOutput.insert(END, "\n\n")
 
 
 def verify():
     global game2
-    if l['text'] == "Games":
+    if main_label['text'] == "Games":
         txtOutput.delete('0.0', END)
         txtOutput1.delete('0.0', END)
-    l.config(text='Generated Match')
+    main_label.config(text='Generated Match')
     listax = []
     lista0 = []
     lista2x = []
@@ -274,7 +279,8 @@ def verify():
     string_tmp = ""
     for x in lista_mare:
         string_tmp += str(x) + " "
-    print(string_tmp)
+    if not string_tmp:
+        string_tmp = "None"
     with open("../Prolog/input.txt", "w+") as fd:
         fd.write(string_tmp)
 
@@ -301,7 +307,7 @@ def verify():
         if button["text"] == "X" or button["text"] == "0":
             if moves_list[index] in mutari:
                 mutari.remove(moves_list[index])
-    print(mutari)
+
     if not mutari:
         txtOutput.insert(END, "Prolog didn't find any move!\n")
     else:
@@ -468,8 +474,8 @@ if debug:
     Label(tk, text="h", font="Times 10", bg="white").place(x=140, y=300)
     Label(tk, text="i", font="Times 10", bg="white").place(x=280, y=300)
 
-l = Label(tk, text="Games", font="Times 15 bold", justify=RIGHT)
-l.place(x=450, y=30)
+main_label = Label(tk, text="Games", font="Times 15 bold", justify=RIGHT)
+main_label.place(x=450, y=30)
 Label(tk, text="Wins", font="Times 15 bold").place(x=450, y=250)
 txtFrame = Frame(tk, borderwidth=1, relief="sunken")
 txtOutput = Text(txtFrame, wrap=NONE, height=10, width=65, borderwidth=0)

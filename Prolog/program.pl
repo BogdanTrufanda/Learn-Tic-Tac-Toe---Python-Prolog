@@ -1,41 +1,41 @@
-win(Board, Player) :- rowwin(Board, Player).
-win(Board, Player) :- colwin(Board, Player).
-win(Board, Player) :- diagwin(Board, Player).
+win(Board, Who) :- row_case_win(Board, Who).
+win(Board, Who) :- col_case_win(Board, Who).
+win(Board, Who) :- diag_case_win(Board, Who).
 
-rowwin(Board, Player) :- Board = [Player,Player,Player,_,_,_,_,_,_].
-rowwin(Board, Player) :- Board = [_,_,_,Player,Player,Player,_,_,_].
-rowwin(Board, Player) :- Board = [_,_,_,_,_,_,Player,Player,Player].
+row_case_win(Board, Who) :- Board = [Who,Who,Who,_,_,_,_,_,_].
+row_case_win(Board, Who) :- Board = [_,_,_,Who,Who,Who,_,_,_].
+row_case_win(Board, Who) :- Board = [_,_,_,_,_,_,Who,Who,Who].
 
-colwin(Board, Player) :- Board = [Player,_,_,Player,_,_,Player,_,_].
-colwin(Board, Player) :- Board = [_,Player,_,_,Player,_,_,Player,_].
-colwin(Board, Player) :- Board = [_,_,Player,_,_,Player,_,_,Player].
+col_case_win(Board, Who) :- Board = [Who,_,_,Who,_,_,Who,_,_].
+col_case_win(Board, Who) :- Board = [_,Who,_,_,Who,_,_,Who,_].
+col_case_win(Board, Who) :- Board = [_,_,Who,_,_,Who,_,_,Who].
 
-diagwin(Board, Player) :- Board = [Player,_,_,_,Player,_,_,_,Player].
-diagwin(Board, Player) :- Board = [_,_,Player,_,Player,_,Player,_,_].
+diag_case_win(Board, Who) :- Board = [Who,_,_,_,Who,_,_,_,Who].
+diag_case_win(Board, Who) :- Board = [_,_,Who,_,Who,_,Who,_,_].
 
-move([b,B,C,D,E,F,G,H,I], Player, [Player,B,C,D,E,F,G,H,I]).
-move([A,b,C,D,E,F,G,H,I], Player, [A,Player,C,D,E,F,G,H,I]).
-move([A,B,b,D,E,F,G,H,I], Player, [A,B,Player,D,E,F,G,H,I]).
-move([A,B,C,b,E,F,G,H,I], Player, [A,B,C,Player,E,F,G,H,I]).
-move([A,B,C,D,b,F,G,H,I], Player, [A,B,C,D,Player,F,G,H,I]).
-move([A,B,C,D,E,b,G,H,I], Player, [A,B,C,D,E,Player,G,H,I]).
-move([A,B,C,D,E,F,b,H,I], Player, [A,B,C,D,E,F,Player,H,I]).
-move([A,B,C,D,E,F,G,b,I], Player, [A,B,C,D,E,F,G,Player,I]).
-move([A,B,C,D,E,F,G,H,b], Player, [A,B,C,D,E,F,G,H,Player]).
+move([b,B,C,D,E,F,G,H,I], Who, [Who,B,C,D,E,F,G,H,I]).
+move([A,b,C,D,E,F,G,H,I], Who, [A,Who,C,D,E,F,G,H,I]).
+move([A,B,b,D,E,F,G,H,I], Who, [A,B,Who,D,E,F,G,H,I]).
+move([A,B,C,b,E,F,G,H,I], Who, [A,B,C,Who,E,F,G,H,I]).
+move([A,B,C,D,b,F,G,H,I], Who, [A,B,C,D,Who,F,G,H,I]).
+move([A,B,C,D,E,b,G,H,I], Who, [A,B,C,D,E,Who,G,H,I]).
+move([A,B,C,D,E,F,b,H,I], Who, [A,B,C,D,E,F,Who,H,I]).
+move([A,B,C,D,E,F,G,b,I], Who, [A,B,C,D,E,F,G,Who,I]).
+move([A,B,C,D,E,F,G,H,b], Who, [A,B,C,D,E,F,G,H,Who]).
 
 x_can_win_in_one(Board) :- move(Board, x, Newboard), win(Newboard, x).
 o_can_win_in_one(Board) :- move(Board, '0', Newboard), win(Newboard, '0').
 
-xrespond(Board,Newboard) :-
+x_response(Board,Newboard) :-
   move(Board, x, Newboard),
   win(Newboard, x),
   !.
-xrespond(Board,Newboard) :-
+x_response(Board,Newboard) :-
   move(Board, x, Newboard),
   not(o_can_win_in_one(Newboard)).
-xrespond(Board,Newboard) :-
+x_response(Board,Newboard) :-
   move(Board, x, Newboard).
-xrespond(Board,Newboard) :-
+x_response(Board,Newboard) :-
   not(member(b,Board)),
   !,
   open('output.txt',append,OS),
@@ -43,16 +43,16 @@ xrespond(Board,Newboard) :-
   close(OS),
   Newboard = Board.
 
-orespond(Board,Newboard) :-
+o_response(Board,Newboard) :-
   move(Board, '0', Newboard),
   win(Newboard, '0'),
   !.
-orespond(Board,Newboard) :-
+o_response(Board,Newboard) :-
   move(Board, '0', Newboard),
   not(x_can_win_in_one(Newboard)).
-orespond(Board,Newboard) :-
+o_response(Board,Newboard) :-
   move(Board, '0', Newboard).
-orespond(Board,Newboard) :-
+o_response(Board,Newboard) :-
   not(member(b,Board)),
   !,
   open('output.txt',append,OS),
@@ -61,9 +61,9 @@ orespond(Board,Newboard) :-
   Newboard = Board.
 
 respond('0', Board, Newboard) :-
-  orespond(Board, Newboard).
+  o_response(Board, Newboard).
 respond(x, Board, Newboard) :-
-  xrespond(Board, Newboard).
+  x_response(Board, Newboard).
 
 read_from_file(File) :-
     open('output.txt',write,OS),
@@ -71,6 +71,7 @@ read_from_file(File) :-
     close(OS),
 
     open(File, read, Stream),
+   % nb_setval(last,'0'),
     nb_setval(mylist, [a,b,c,d,e,f,g,h,i]),
     nb_getval(mylist, Board),
     get_char(Stream, Char1),
@@ -88,7 +89,7 @@ process_the_stream(end_of_file, _, Board) :-
     replace(i,b, R6, R7),
 
    %write(R7),
-
+   %Last = '0',
     nb_getval(last,Last),
     other(Last,Next),
     respond(Next, R7, Newboard),
